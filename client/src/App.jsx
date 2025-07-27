@@ -6,7 +6,7 @@ function App() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/name')
+    fetch('https://simple-backend-11l6.onrender.com/api/name')
       .then(res => res.json())
       .then(data => {
         setName(data.name || 'Anonymous');
