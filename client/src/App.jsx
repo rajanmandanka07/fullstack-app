@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 function App() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(true);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     fetch('https://simple-backend-11l6.onrender.com/api/name')
@@ -20,28 +19,37 @@ function App() {
       console.log(name);
   }, []);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 100,
-        y: (e.clientY / window.innerHeight) * 100,
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  const generateParticles = () => {
-    return Array.from({ length: 25 }, (_, i) => (
+  const generateStars = () => {
+    return Array.from({ length: 100 }, (_, i) => (
       <div
         key={i}
-        className="absolute w-1 h-1 bg-white/20 rounded-full animate-pulse"
+        className="absolute bg-white rounded-full animate-twinkle"
         style={{
           left: `${Math.random() * 100}%`,
           top: `${Math.random() * 100}%`,
+          width: `${Math.random() * 3 + 1}px`,
+          height: `${Math.random() * 3 + 1}px`,
           animationDelay: `${Math.random() * 4}s`,
-          animationDuration: `${3 + Math.random() * 3}s`,
+          animationDuration: `${2 + Math.random() * 3}s`,
+          opacity: Math.random() * 0.8 + 0.2,
+        }}
+      />
+    ));
+  };
+
+  const generateMovingStars = () => {
+    return Array.from({ length: 20 }, (_, i) => (
+      <div
+        key={`moving-${i}`}
+        className="absolute bg-white rounded-full animate-float"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          width: `${Math.random() * 2 + 1}px`,
+          height: `${Math.random() * 2 + 1}px`,
+          animationDelay: `${Math.random() * 10}s`,
+          animationDuration: `${15 + Math.random() * 20}s`,
+          opacity: Math.random() * 0.6 + 0.3,
         }}
       />
     ));
@@ -50,7 +58,7 @@ function App() {
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center bg-black overflow-hidden relative">
-        {/* Animated background grid */}
+        {/* Static background grid */}
         <div className="absolute inset-0 opacity-10">
           <div className="h-full w-full bg-gradient-to-br from-gray-900 to-black"
                style={{
@@ -60,21 +68,11 @@ function App() {
           />
         </div>
         
-        {/* Floating particles */}
+        {/* Starfield */}
         <div className="absolute inset-0">
-          {generateParticles()}
+          {generateStars()}
+          {generateMovingStars()}
         </div>
-        
-        {/* Dynamic glow effect */}
-        <div 
-          className="absolute inset-0 opacity-30"
-          style={{
-            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
-              rgba(255, 255, 255, 0.1) 0%, 
-              rgba(128, 128, 128, 0.05) 50%, 
-              transparent 100%)`
-          }}
-        />
 
         {/* Loading content */}
         <div className="relative z-10 flex flex-col items-center space-y-8">
@@ -103,7 +101,7 @@ function App() {
 
   return (
     <div className="w-full h-screen flex justify-center items-center bg-black overflow-hidden relative">
-      {/* Animated background grid */}
+      {/* Static background grid */}
       <div className="absolute inset-0 opacity-5">
         <div className="h-full w-full bg-gradient-to-br from-gray-900 to-black"
              style={{
@@ -113,27 +111,16 @@ function App() {
         />
       </div>
 
-      {/* Floating particles */}
+      {/* Starfield background */}
       <div className="absolute inset-0">
-        {generateParticles()}
+        {generateStars()}
+        {generateMovingStars()}
         
         {/* Geometric floating elements */}
         <div className="absolute top-1/4 left-1/4 w-20 h-20 border border-white/10 rotate-45 animate-pulse"></div>
         <div className="absolute bottom-1/3 right-1/4 w-16 h-16 border border-white/20 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
         <div className="absolute top-1/2 right-1/5 w-12 h-12 border border-white/15 transform rotate-12 animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
-
-      {/* Mouse-following glow */}
-      <div 
-        className="absolute inset-0 opacity-20 transition-all duration-500"
-        style={{
-          background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
-            rgba(255, 255, 255, 0.15) 0%, 
-            rgba(200, 200, 200, 0.08) 30%, 
-            rgba(150, 150, 150, 0.04) 60%, 
-            transparent 100%)`
-        }}
-      />
 
       {/* Main content */}
       <div className="relative z-10 w-full max-w-5xl mx-auto px-6">
@@ -225,6 +212,35 @@ function App() {
           }
         }
         
+        @keyframes twinkle {
+          0%, 100% {
+            opacity: 0.2;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.2);
+          }
+        }
+        
+        @keyframes float {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+          25% {
+            transform: translate(20px, -20px) rotate(90deg);
+          }
+          50% {
+            transform: translate(-10px, -40px) rotate(180deg);
+          }
+          75% {
+            transform: translate(-30px, -10px) rotate(270deg);
+          }
+          100% {
+            transform: translate(0, 0) rotate(360deg);
+          }
+        }
+        
         .animate-fade-in {
           animation: fade-in 1s ease-out;
         }
@@ -235,6 +251,14 @@ function App() {
         
         .animate-reverse {
           animation-direction: reverse;
+        }
+        
+        .animate-twinkle {
+          animation: twinkle infinite ease-in-out;
+        }
+        
+        .animate-float {
+          animation: float infinite linear;
         }
       `}</style>
     </div>
